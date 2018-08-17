@@ -1,0 +1,32 @@
+Reset Vector Data structure( Ia32\ResetVec.asm16)
+-------------------------------------- ORG 0h
+0xffffffc0: 00 8d d8 ff 00 00 00 00 -- FitTablePointer DD 0eeeeeeeeh, 0eeeeeeeeh
+            00 00 00 00 00 00 00 00
+
+                                       ORG 10h
+0xffffffd0: bf 50 41 ----------------- mov di, "AP" 
+            eb 1d          ----------- jmp ApStartup (short Jb)
+			00 00 00
+            00 00 00 00 00 00 00 00
+
+                                       ORG 20h
+0xffffffe0: fc 1d e0 ff -------------- PeiCoreEntryPoint DD 87654321h
+                                       InterruptHandler    PROC
+            eb fe -------------------- jmp $ (Jb to self)
+            cf 00 -------------------- iret
+                                       InterruptHandler    ENDP
+            00 00 00 00 00 00 00 00
+
+                                        ORG 30h(ResetHandler)
+0xfffffff0: 0f 09 --------------------- wbinvd
+                                        ApStartup:
+            e9 e3 f7 ------------------ jmp _ModuleEntryPoint (<- DB 0e9h; DW -3)
+                                             |_(SEC entrypoint, in flat32.asm)
+                                             |_"0xf7e3" is fixed up by build tool
+            00 00 00
+
+                                        ORG 38h
+0xfffffff8: fe 00 00 00 --------------- ApSegAddress DD 12345678h (fixup by build tool)
+
+                                        ORG 3ch
+0xfffffffc: 00 00 e0 ff --------------- BfvBase DD 12345678h (fixup by build tool)
