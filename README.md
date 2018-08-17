@@ -1,1 +1,1 @@
-# uefi
+# uefi note
